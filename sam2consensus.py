@@ -206,10 +206,7 @@ with open(filename) as mapfile:
         insertions[gene_current] = [real_insertions_coordinates,real_insertions_motifs]
     else:
         del insertions[gene_current]
-
-    sam_file = ['@HD'+'\t'+'VN:1.3'+'\t'+'SO:coordinate']
-    sam_reads = []
-    sam_reads.append(line.strip('\n'))
+    print genes
     print 'Gene '+gene_current.split('_')[1]+' processed\n'
 
 ''' Dictionary to translate ambiguities IUPAC '''
