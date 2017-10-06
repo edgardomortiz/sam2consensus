@@ -182,35 +182,35 @@ with open(filename) as mapfile:
     ''' For the last read of the last gene only, 
         same process as line 117 '''
     nuc_covs = 0
-    for pos in range(0, (len(genes[gene_previous])-1)):
-        nuc_covs += sum(genes[gene_previous][pos].values())
-    cov_average = float(nuc_covs/genes[gene_previous][-1])
-    genes[gene_previous].append(cov_average)
+    for pos in range(0, (len(genes[gene_current])-1)):
+        nuc_covs += sum(genes[gene_current][pos].values())
+    cov_average = float(nuc_covs/genes[gene_current][-1])
+    genes[gene_current].append(cov_average)
 
     real_insertions_coordinates = []
     real_insertions_motifs = []
-    for ins in sorted(set(insertions[gene_previous])):
-        cov_at_edges = float((sum(genes[gene_previous][ins[0]].values())+sum(genes[gene_previous][ins[0]+1].values()))/2)
-        if insertions[gene_previous].count(ins) >= cov_at_edges*0.97*(1-cons_threshold): # 0.97 to account for errors not contributing to coverage of insertion
+    for ins in sorted(set(insertions[gene_current])):
+        cov_at_edges = float((sum(genes[gene_current][ins[0]].values())+sum(genes[gene_current][ins[0]+1].values()))/2)
+        if insertions[gene_current].count(ins) >= cov_at_edges*0.97*(1-cons_threshold): # 0.97 to account for errors not contributing to coverage of insertion
             real_insertions_coordinates.append(ins[0])
             real_insertions_motifs.append(ins[1])
-            print 'Insertion detected: coverage at sides of insertion: '+str(cov_at_edges)+', insertion coverage: '+str(insertions[gene_previous].count(ins))+', coord/motif: '+str(ins)
+            print 'Insertion detected: coverage at sides of insertion: '+str(cov_at_edges)+', insertion coverage: '+str(insertions[gene_current].count(ins))+', coord/motif: '+str(ins)
     
     if real_insertions_coordinates != []:
-        print gene_previous.split('_')[1]+' contains insertion(s), a separate SAM file will be additionally created for this gene.'
-        sam_file.append('@SQ'+'\t'+'SN:'+gene_previous+'\t'+'LN:'+str(genes[gene_previous][-2]))
+        print gene_current.split('_')[1]+' contains insertion(s), a separate SAM file will be additionally created for this gene.'
+        sam_file.append('@SQ'+'\t'+'SN:'+gene_current+'\t'+'LN:'+str(genes[gene_current][-2]))
         for read in sam_reads:
             sam_file.append(read)
-        outfile = open(gene_previous.split('_')[1]+'_'+specimen+'.sam', 'w')
+        outfile = open(gene_current.split('_')[1]+'_'+specimen+'.sam', 'w')
         outfile.write('\n'.join(sam_file)+'\n')
-        insertions[gene_previous] = [real_insertions_coordinates,real_insertions_motifs]
+        insertions[gene_current] = [real_insertions_coordinates,real_insertions_motifs]
     else:
-        del insertions[gene_previous]
+        del insertions[gene_current]
 
     sam_file = ['@HD'+'\t'+'VN:1.3'+'\t'+'SO:coordinate']
     sam_reads = []
     sam_reads.append(line.strip('\n'))
-    print 'Gene '+gene_previous.split('_')[1]+' processed\n'
+    print 'Gene '+gene_current.split('_')[1]+' processed\n'
 
 ''' Dictionary to translate ambiguities IUPAC '''
 amb = {('-','A'):'A',
