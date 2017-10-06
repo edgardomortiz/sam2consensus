@@ -17,9 +17,13 @@ a separate SAM file just for the particular gene for verification purposes.
 Simply specify the name of the SAM input file and optionally the consensus thresold in decimals:
 
 _Example 1:_ Using the default consensus threshold of 0.25:
+```bash
 python sam2consensus.py myfile.sam
+```
 
 _Example 2:_ Using a custom consensus threshold of 0.50:
+```bash
 python sam2consensus.py myfile.sam 0.5
+```
 
 ## Our pipeline for obtaining the SAM file
