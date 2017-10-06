@@ -14,7 +14,7 @@ It will produce a FASTA sequence per gene, and in case the gene has insertions i
 a separate SAM file just for the particular gene for verification purposes.
 
 ## Usage
-Simply specify the name of the SAM input file and optionally the consensus thresold in decimals:
+Simply specify the name of the SAM input file and optionally the consensus threshold in decimals:
 
 _Example 1:_ Using the default consensus threshold of 0.25:
 ```bash
