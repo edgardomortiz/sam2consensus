@@ -162,8 +162,6 @@ with open(filename) as mapfile:
                 else:
                     del insertions[gene_previous]
                 
-                print genes[gene_previous][-2]
-
                 ''' Reset SAM header, empty list of SAM reads '''
                 sam_file = ['@HD'+'\t'+'VN:1.3'+'\t'+'SO:coordinate']
                 sam_reads = []
@@ -208,7 +206,6 @@ with open(filename) as mapfile:
         insertions[gene_current] = [real_insertions_coordinates,real_insertions_motifs]
     else:
         del insertions[gene_current]
-    print genes[gene_current][-2]
     print 'Gene '+gene_current.split('_')[1]+' processed\n'
 
 ''' Dictionary to translate ambiguities IUPAC '''
@@ -231,7 +228,7 @@ amb = {('-','A'):'A',
 ''' Obtain sequence from the 'genes' dictionary '''
 fastas = {}
 for gene in genes.keys():
-    for pos in range(0, genes[gene][-2]):
+    for pos in range(0, len(genes[gene])-2):
         count_nucs = list(sorted(genes[gene][pos].iteritems(), key=operator.itemgetter(1), reverse=True)[:2])
         cov_site = sum(genes[gene][pos].values())
         if count_nucs[0][1] >= cons_threshold*cov_site:
