@@ -161,6 +161,8 @@ with open(filename) as mapfile:
                     insertions[gene_previous] = [real_insertions_coordinates,real_insertions_motifs]
                 else:
                     del insertions[gene_previous]
+                
+                print genes[gene_previous][-2]
 
                 ''' Reset SAM header, empty list of SAM reads '''
                 sam_file = ['@HD'+'\t'+'VN:1.3'+'\t'+'SO:coordinate']
@@ -206,7 +208,7 @@ with open(filename) as mapfile:
         insertions[gene_current] = [real_insertions_coordinates,real_insertions_motifs]
     else:
         del insertions[gene_current]
-    print genes
+    print genes[gene_current][-2]
     print 'Gene '+gene_current.split('_')[1]+' processed\n'
 
 ''' Dictionary to translate ambiguities IUPAC '''
