@@ -15,7 +15,7 @@ a separate SAM file just for the particular gene for verification purposes.
 '''
 
 __author__      = "Edgardo M. Ortiz"
-__credits__     = "Deise J.P. Gonçalves"
+__credits__     = "Deise J.P. Goncalves"
 __version__     = "1.0"
 __email__       = "e.ortiz.v@gmail.com"
 __date__        = "2017-10-06"
