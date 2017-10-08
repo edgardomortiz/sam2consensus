@@ -26,4 +26,9 @@ _Example 2:_ Using a custom consensus threshold of 0.50:
 python sam2consensus.py myfile.sam 0.5
 ```
 
+_Example 3:_ Using a custom consensus threshold of 0.75 and specifying a different folder for output:
+```bash
+python sam2consensus.py myfile.sam 0.75 ./outfiles/
+```
+
 ## _Our pipeline for obtaining the SAM file_
