@@ -151,7 +151,7 @@ with open(filename) as mapfile:
                 nuc_covs = 0
                 for pos in range(0, (len(genes[gene_previous])-1)):
                     nuc_covs += sum(genes[gene_previous][pos].values())
-                cov_average = float(nuc_covs/genes[gene_previous][-1])
+                cov_average = float(nuc_covs)/float(genes[gene_previous][-1])
                 genes[gene_previous].append(cov_average)
 
                 # Find real insertions based on coverage of adjacent nucleotides
@@ -160,10 +160,10 @@ with open(filename) as mapfile:
                 for ins in sorted(set(insertions[gene_previous])):
 
                     # Get the average coverage of the nucleotide before and after the insertion
-                    cov_at_edges = float((sum(genes[gene_previous][ins[0]].values())+sum(genes[gene_previous][ins[0]+1].values()))/2)
+                    cov_at_edges = float(sum(genes[gene_previous][ins[0]].values())+sum(genes[gene_previous][ins[0]+1].values()))/2
 
                     # If the insertion has acceptable coverage accept it as real
-                    if insertions[gene_previous].count(ins) > cov_at_edges*0.97*(1-cons_threshold):
+                    if float(insertions[gene_previous].count(ins)) > cov_at_edges*0.97*(1-cons_threshold):
                         real_insertions_coordinates.append(ins[0])
                         real_insertions_motifs.append(ins[1])
                         print "Insertion detected, coverage at sides of insertion: "+str(cov_at_edges)+", insertion coverage: "+str(insertions[gene_previous].count(ins))+", coord/motif: "+str(ins)
@@ -203,14 +203,14 @@ with open(filename) as mapfile:
     nuc_covs = 0
     for pos in range(0, (len(genes[gene_current])-1)):
         nuc_covs += sum(genes[gene_current][pos].values())
-    cov_average = float(nuc_covs/genes[gene_current][-1])
+    cov_average = float(nuc_covs)/float(genes[gene_current][-1])
     genes[gene_current].append(cov_average)
 
     real_insertions_coordinates = []
     real_insertions_motifs = []
     for ins in sorted(set(insertions[gene_current])):
-        cov_at_edges = float((sum(genes[gene_current][ins[0]].values())+sum(genes[gene_current][ins[0]+1].values()))/2)
-        if insertions[gene_current].count(ins) >= cov_at_edges*0.97*(1-cons_threshold): # 0.97 to account for errors not contributing to coverage of insertion
+        cov_at_edges = float(sum(genes[gene_current][ins[0]].values())+sum(genes[gene_current][ins[0]+1].values()))/2
+        if float(insertions[gene_current].count(ins)) >= cov_at_edges*0.97*(1-cons_threshold): # 0.97 to account for errors not contributing to coverage of insertion
             real_insertions_coordinates.append(ins[0])
             real_insertions_motifs.append(ins[1])
             print "Insertion detected: coverage at sides of insertion: "+str(cov_at_edges)+", insertion coverage: "+str(insertions[gene_current].count(ins))+", coord/motif: "+str(ins)
@@ -261,7 +261,7 @@ fastas = {}
 for gene in genes:
     for pos in range(0, genes[gene][-2]):
         count_nucs = list(sorted(genes[gene][pos].iteritems(), key=operator.itemgetter(1), reverse=True)[:2])
-        cov_site = sum(genes[gene][pos].values())
+        cov_site = float(sum(genes[gene][pos].values()))
         if cov_site == 0:
             if gene not in fastas:
                 fastas[gene] = "N"
