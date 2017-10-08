@@ -31,7 +31,7 @@ import sys
 import re
 import operator
 
-filename = sys.argv[1]		              # First argument is the name of the SAM file
+filename = sys.argv[1]                    # First argument is the name of the SAM file
 try: cons_threshold = float(sys.argv[2])  # Second argument is the percentage fo consensus, defaults to 0.25
 except (ValueError, IndexError): cons_threshold = 0.25
 
