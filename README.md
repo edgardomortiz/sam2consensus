@@ -5,7 +5,7 @@ Get the consensus sequences for reads mapped to a reference made of multiple sep
 The program takes as input a SAM file resulting from mapping short reads to a collection of
 gene sequences as reference, then it calculates the consensus sequence per gene without
 considering the reference. It adds insertions and can take a custom consensus threshold,
-the consensus method the same as the one described for Geneious (http://assets.geneious.com/manual/8.1/GeneiousManualse41.html). Regions that were not covered will be filled with Ns.
+the consensus method is the same as the one described for [Geneious](http://assets.geneious.com/manual/8.1/GeneiousManualse41.html). Regions that were not covered will be filled with Ns.
 
 Input SAM files have to be sorted and contain only mapped reads (preferably). Original reference FASTAs are not necessary.
 
