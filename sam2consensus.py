@@ -8,10 +8,11 @@ The program takes as input a SAM file resulting from mapping short reads to a co
 gene sequences as reference, then it calculates the consensus sequence per gene without
 considering the reference. It adds insertions and can take a custom consensus threshold,
 the consensus method is the same as the one described for Geneious
-(http://assets.geneious.com/manual/8.1/GeneiousManualse41.html).
+(http://assets.geneious.com/manual/8.1/GeneiousManualse41.html). Regions with no coverage
+are filled with Ns.
 
-Input SAM files have to be sorted, contain only mapped reads (preferably), and have
-CIGAR strings in SAM v.1.3. Original reference FASTAs are not necessary.
+Input SAM files have to be sorted, and contain only mapped reads (preferably). Original
+reference FASTAs are not necessary.
 
 It will produce a FASTA sequence per gene, and in case the gene has insertions it will also create
 a separate SAM file just for the particular gene for verification purposes.
@@ -62,7 +63,7 @@ def parsecigar(cigarstring, seq, pos_ref):
              sequence inserted
     '''
 
-    matches = re.findall(r"(\d+)([A-Z]{1})", cigarstring)
+    matches = re.findall(r"(\d+)([MIDNSHPX=]{1})", cigarstring)
     cigar = [{"type": m[1], "length": int(m[0])} for m in matches]
     start = 0
     start_ref = pos_ref
@@ -78,10 +79,24 @@ def parsecigar(cigarstring, seq, pos_ref):
             seqout += seq[start:start + l]
             start += l
             start_ref += l
+        elif cigar[c]["type"] == "=":
+            seqout += seq[start:start + l]
+            start += l
+            start_ref += l
+        elif cigar[c]["type"] == "X":
+            seqout += seq[start:start + l]
+            start += l
+            start_ref += l
         elif cigar[c]["type"] == "I":
             insert.append((start_ref, seq[start:start+l]))
             start += l
         elif cigar[c]["type"] == "D":
+            seqout += "-" * l
+            start_ref += l
+        elif cigar[c]["type"] == "N":
+            seqout += "-" * l
+            start_ref += l
+        elif cigar[c]["type"] == "P": # check functionality of this case
             seqout += "-" * l
             start_ref += l
         else:
@@ -160,7 +175,10 @@ with open(filename) as mapfile:
                 for ins in sorted(set(insertions[gene_previous])):
 
                     # Get the average coverage of the nucleotide before and after the insertion
-                    cov_at_edges = float(sum(genes[gene_previous][ins[0]].values())+sum(genes[gene_previous][ins[0]+1].values()))/2
+                    if genes[gene_previous][-2]-1 > ins[0]:
+                        cov_at_edges = float(sum(genes[gene_previous][ins[0]].values())+sum(genes[gene_previous][ins[0]+1].values()))/2
+                    else:
+                        cov_at_edges = sum(genes[gene_previous][ins[0]].values())
 
                     # If the insertion has acceptable coverage accept it as real
                     if float(insertions[gene_previous].count(ins)) > cov_at_edges*0.97*(1-cons_threshold):
@@ -209,7 +227,10 @@ with open(filename) as mapfile:
     real_insertions_coordinates = []
     real_insertions_motifs = []
     for ins in sorted(set(insertions[gene_current])):
-        cov_at_edges = float(sum(genes[gene_current][ins[0]].values())+sum(genes[gene_current][ins[0]+1].values()))/2
+        if genes[gene_current][-2]-1 > ins[0]:
+            cov_at_edges = float(sum(genes[gene_current][ins[0]].values())+sum(genes[gene_current][ins[0]+1].values()))/2
+        else:
+            cov_at_edges = sum(genes[gene_current][ins[0]].values())
         if float(insertions[gene_current].count(ins)) >= cov_at_edges*0.97*(1-cons_threshold): # 0.97 to account for errors not contributing to coverage of insertion
             real_insertions_coordinates.append(ins[0])
             real_insertions_motifs.append(ins[1])
