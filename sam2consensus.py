@@ -22,7 +22,7 @@ a separate SAM file just for the particular gene for verification purposes.
 
 __author__      = "Edgardo M. Ortiz"
 __credits__     = "Deise J.P. Gonçalves"
-__version__     = "1.1"
+__version__     = "1.2"
 __email__       = "e.ortiz.v@gmail.com"
 __date__        = "2017-10-07"
 
@@ -193,7 +193,7 @@ with open(filename) as mapfile:
                     sam_file.append("@SQ"+"\t"+"SN:"+gene_previous+"\t"+"LN:"+str(genes[gene_previous][-2]))
                     for read in sam_reads:
                         sam_file.append(read)
-                    outfile = open(outfolder+gene_previous.split("_")[1]+"_"+specimen+".sam", "w")
+                    outfile = open(outfolder+gene_previous.split("_")[1]+"_"+organelle+"_"+specimen+".sam", "w")
                     outfile.write("\n".join(sam_file)+"\n")
                     insertions[gene_previous] = [real_insertions_coordinates,real_insertions_motifs]
                 else:
@@ -241,7 +241,7 @@ with open(filename) as mapfile:
         sam_file.append("@SQ"+"\t"+"SN:"+gene_current+"\t"+"LN:"+str(genes[gene_current][-2]))
         for read in sam_reads:
             sam_file.append(read)
-        outfile = open(outfolder+gene_current.split("_")[1]+"_"+specimen+".sam", "w")
+        outfile = open(outfolder+gene_current.split("_")[1]+"_"+organelle+"_"+specimen+".sam", "w")
         outfile.write("\n".join(sam_file)+"\n")
         insertions[gene_current] = [real_insertions_coordinates,real_insertions_motifs]
     else:
