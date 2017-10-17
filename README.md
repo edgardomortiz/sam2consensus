@@ -31,3 +31,7 @@ python sam2consensus.py myfile.sam 0.75 ./outfiles/
 ```
 
 ## _Our pipeline for obtaining the SAM file_
+
+## _Credits_
+- Code: [Edgardo M. Ortiz](mailto:e.ortiz.v@gmail.com)
+- Data and testing: [Deise J. P. Gonçalves](mailto:deisejpg@gmail.com)
