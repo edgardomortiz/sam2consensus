@@ -185,7 +185,7 @@ def main():
                             cov_at_edges = sum(genes[gene_previous][ins[0]].values())
 
                         # If the insertion has acceptable coverage accept it as real
-                        if float(insertions[gene_previous].count(ins)) > cov_at_edges*0.95*(1-cons_threshold):
+                        if (float(insertions[gene_previous].count(ins)) > (cov_at_edges-float(insertions[gene_previous].count(ins)))) and (float(insertions[gene_previous].count(ins)) >= cov_at_edges*cons_threshold):
                             real_insertions_coordinates.append(ins[0])
                             real_insertions_motifs.append(ins[1])
                             print "Insertion detected, coverage at sides of insertion: "+str(cov_at_edges)+", insertion coverage: "+str(insertions[gene_previous].count(ins))+", coord/motif: "+str(ins)
@@ -235,7 +235,7 @@ def main():
                 cov_at_edges = float(sum(genes[gene_current][ins[0]].values())+sum(genes[gene_current][ins[0]+1].values()))/2
             else:
                 cov_at_edges = sum(genes[gene_current][ins[0]].values())
-            if float(insertions[gene_current].count(ins)) >= cov_at_edges*0.95*(1-cons_threshold):
+            if (float(insertions[gene_current].count(ins)) > (cov_at_edges-float(insertions[gene_current].count(ins)))) and (float(insertions[gene_current].count(ins)) >= cov_at_edges*cons_threshold):
                 real_insertions_coordinates.append(ins[0])
                 real_insertions_motifs.append(ins[1])
                 print "Insertion detected: coverage at sides of insertion: "+str(cov_at_edges)+", insertion coverage: "+str(insertions[gene_current].count(ins))+", coord/motif: "+str(ins)
