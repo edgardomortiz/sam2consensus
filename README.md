@@ -13,21 +13,37 @@ It will produce a FASTA sequence per gene, and in case the gene has insertions i
 a separate SAM file just for the particular gene for verification purposes.
 
 ## _Usage_
-Simply specify the name of the SAM input file and optionally the consensus threshold in decimals:
+Type `python sam2consensus.py -h` to show the help:
+```
+usage: sam2consensus.py [-h] -i FILENAME [-c CONS_THRESHOLD] [-o OUTFOLDER]
 
+Calculates the consensus sequence from reads aligned to a multi-gene fasta
+reference
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i FILENAME, --input FILENAME
+                        Name of the SAM file, SAM must be sorted before!
+  -c CONS_THRESHOLD, --consensus-threshold CONS_THRESHOLD
+                        Consensus threshold sensu Geneious, default=0.25
+  -o OUTFOLDER, --outfolder OUTFOLDER
+                        Name of output folder, default=same folder as input
+```
+
+## _Examples_
 _Example 1:_ Using the default consensus threshold of 0.25:
 ```bash
-python sam2consensus.py myfile.sam
+python sam2consensus.py -i myfile.sam
 ```
 
 _Example 2:_ Using a custom consensus threshold of 0.50:
 ```bash
-python sam2consensus.py myfile.sam 0.5
+python sam2consensus.py -i myfile.sam -c 0.5
 ```
 
 _Example 3:_ Using a custom consensus threshold of 0.75 and specifying a different folder for output:
 ```bash
-python sam2consensus.py myfile.sam 0.75 ./outfiles/
+python sam2consensus.py -i myfile.sam -c 0.75 -o ./outfiles/
 ```
 
 ## _Our pipeline for obtaining the SAM file_
