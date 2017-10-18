@@ -11,8 +11,8 @@ the consensus method is the same as the one described for Geneious
 (http://assets.geneious.com/manual/8.1/GeneiousManualse41.html). Regions with no coverage
 are filled with Ns.
 
-Input SAM files have to be sorted, and contain only mapped reads (preferably). Original
-reference FASTAs are not necessary.
+Input SAM files have to be sorted, and contain only mapped reads (preferably, to save
+computation times). Original reference FASTAs are not necessary.
 
 It will produce a FASTA sequence per gene, and in case the gene has insertions it will also create
 a separate SAM file just for the particular gene for verification purposes.
