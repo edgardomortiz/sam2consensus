@@ -29,6 +29,7 @@ __date__        = "2017-10-07"
 import sys
 import re
 import operator
+import argparse
 
 
 def parsecigar(cigarstring, seq, pos_ref):
