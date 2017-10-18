@@ -13,7 +13,7 @@ It will produce a FASTA sequence per gene, and in case the gene has insertions i
 a separate SAM file just for the particular gene for verification purposes.
 
 ## _Usage_
-Type `python sam2consensus.py -h` to show the help:
+Just type `python sam2consensus.py -h` to show the help of the program:
 ```
 usage: sam2consensus.py [-h] -i FILENAME [-c CONS_THRESHOLD] [-o OUTFOLDER]
 
