@@ -323,7 +323,7 @@ def main():
 
     # Write fasta output files
     for gene in fastas:
-        outfile = open(outfolder+gene.split("_")[1]+"_"+organelle+"_"+specimen+".fasta", "w")
+        outfile = open(outfolder+gene.split("_")[1]+"_"+organelle+"_"+specimen+"_cons"+str(cons_threshold)+".fasta", "w")
         outfile.write(">"+specimen[:-3]+" "+specimen[:-3]+", "+gene.split("_")[1]+", "+organelle+", coverage "+str(genes[gene][-1])+"\n"+fastas[gene]+"\n")
 
 
