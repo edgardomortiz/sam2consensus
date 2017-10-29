@@ -145,7 +145,7 @@ def main():
 
             # Start processing the aligned reads, skip unaligned [*]
             elif line[0] != "@" and line.split("\t")[5] != "*":
-                gene_current = line.split("\t")[2]
+                gene_current = line.split("\t")[2].split()[0]
 
                 # If we haven't started processing the next gene...
                 if gene_current == gene_previous:
