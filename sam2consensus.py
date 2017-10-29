@@ -93,33 +93,40 @@ def main():
         help="Consensus threshold sensu Geneious, default=0.25")
     parser.add_argument("-o", "--outfolder", action="store", dest="outfolder", default="./",
         help="Name of output folder, default=same folder as input")
+    parser.add_argument("-p", "--prefix", action="store", dest="prefix", default="",
+    	help="Prefix for output file name, e.g. sample name, default=filename")
     args = parser.parse_args()
 
     filename = args.filename
     cons_threshold = args.cons_threshold
+    if args.prefix == "":
+    	prefix = args.filename.split("/")[-1].split(".")[-2]
+    else:
+    	prefix = args.prefix
     outfolder = args.outfolder
 
-    specimen = "_".join(filename.split("/")[-1].split("_")[0:3])
-    print "Processing specimen "+specimen+"...\n"
+    print "Processing sample "+prefix+" ...\n"
     
     if outfolder[-1] != "/":
         outfolder += "/"
     
-    organelle = filename.split(".")[1]
-    if organelle not in ["rib","ptd","mit"]:
-        organelle = "unk"
-
     # Process the SAM file in a single pass
     with open(filename) as mapfile:
         genes = {}                                              # Container of sequences per gene
         insertions = {}                                         # Container for insertions with coordinates per gene
         gene_previous = ""                                      # Stores name of previous gene processed
-        sam_file = ["@HD"+"\t"+"VN:1.3"+"\t"+"SO:coordinate"]   # Header for SAM files of genes with insertions
+        sam_file = []
+        sam_header = ""                                           # Container for SAM reads in case of insertions
         sam_reads = []                                          # Container for reads to be written to the SAM
 
         for line in mapfile:
+        	# Store SAM header
+            if line.startswith("@HD"):
+                sam_header = line.strip("\n")
+                sam_file.append(line.strip("\n"))
+
             # Extract gene names
-            if line.startswith("@SQ"):
+            elif line.startswith("@SQ"):
 
                 # Obtain the name of the first gene in the file
                 if gene_previous == "":
@@ -197,14 +204,14 @@ def main():
                         sam_file.append("@SQ"+"\t"+"SN:"+gene_previous+"\t"+"LN:"+str(genes[gene_previous][-2]))
                         for read in sam_reads:
                             sam_file.append(read)
-                        outfile = open(outfolder+gene_previous.split("_")[1]+"_"+organelle+"_"+specimen+".sam", "w")
+                        outfile = open(outfolder+gene_previous.split("_")[1]+"_"+prefix+".sam", "w")
                         outfile.write("\n".join(sam_file)+"\n")
                         insertions[gene_previous] = [real_insertions_coordinates,real_insertions_motifs]
                     else:
                         del insertions[gene_previous]
                     
                     # Reset SAM header, empty list of SAM reads
-                    sam_file = ["@HD"+"\t"+"VN:1.3"+"\t"+"SO:coordinate"]
+                    sam_file = [sam_header]
                     sam_reads = []
                     print "Gene "+gene_previous.split("_")[1]+" processed\n"
 
@@ -245,13 +252,13 @@ def main():
             sam_file.append("@SQ"+"\t"+"SN:"+gene_current+"\t"+"LN:"+str(genes[gene_current][-2]))
             for read in sam_reads:
                 sam_file.append(read)
-            outfile = open(outfolder+gene_current.split("_")[1]+"_"+organelle+"_"+specimen+".sam", "w")
+            outfile = open(outfolder+gene_current.split("_")[1]+"_"+prefix+".sam", "w")
             outfile.write("\n".join(sam_file)+"\n")
             insertions[gene_current] = [real_insertions_coordinates,real_insertions_motifs]
         else:
             del insertions[gene_current]
 
-        print "Gene "+gene_current.split("_")[1]+" processed\n"
+        print "Gene "+gene_current+" processed\n"
 
 
 
@@ -323,8 +330,9 @@ def main():
 
     # Write fasta output files
     for gene in fastas:
-        outfile = open(outfolder+gene.split("_")[1]+"_"+organelle+"_"+specimen+"_cons"+str(cons_threshold)+".fasta", "w")
-        outfile.write(">"+specimen[:-3]+" "+specimen[:-3]+", "+gene.split("_")[1]+", "+organelle+", coverage "+str(genes[gene][-1])+"\n"+fastas[gene]+"\n")
+        outfile = open(outfolder+gene+"_"+prefix+".fasta", "w")
+        outfile.write(">"+prefix[:-3]+" "+prefix[:-3]+", "+gene+", coverage "+str(genes[gene][-1])+"\n"+fastas[gene]+"\n")
+
 
 
 if __name__ == "__main__":

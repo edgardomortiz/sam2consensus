@@ -16,6 +16,7 @@ a separate SAM file just for the particular gene for verification purposes.
 Just type `python sam2consensus.py -h` to show the help of the program:
 ```
 usage: sam2consensus.py [-h] -i FILENAME [-c CONS_THRESHOLD] [-o OUTFOLDER]
+                        [-p PREFIX]
 
 Calculates the consensus sequence from reads aligned to a multi-gene fasta
 reference
@@ -28,6 +29,9 @@ optional arguments:
                         Consensus threshold sensu Geneious, default=0.25
   -o OUTFOLDER, --outfolder OUTFOLDER
                         Name of output folder, default=same folder as input
+  -p PREFIX, --prefix PREFIX
+                        Prefix for output file name, e.g. sample name,
+                        default=filename
 ```
 
 ## _Examples_
