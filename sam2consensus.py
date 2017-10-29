@@ -130,18 +130,18 @@ def main():
 
                 # Obtain the name of the first gene in the file
                 if gene_previous == "":
-                    gene_previous = line.split("\t")[1].replace("SN:","")
+                    gene_previous = line.split("\t")[1].replace("SN:","").split()[0]
 
                 # Populate empty dictionary, values to be store in a list per gene
-                genes[line.split("\t")[1].replace("SN:","")] = []
-                insertions[line.split("\t")[1].replace("SN:","")] = []
+                genes[line.split("\t")[1].replace("SN:","").split()[0]] = []
+                insertions[line.split("\t")[1].replace("SN:","").split()[0]] = []
 
                 # Populate each gene with as many empty nucleotides as the reference
                 for nuc in range(0, int(line.split("\t")[2].replace("LN:",""))):
-                    genes[line.split("\t")[1].replace("SN:","")].append({"A":0,"C":0,"T":0,"G":0,"-":0,"N":0})
+                    genes[line.split("\t")[1].replace("SN:","").split()[0]].append({"A":0,"C":0,"T":0,"G":0,"-":0,"N":0})
 
                 # Also add the length of each gene after the list of nucleotides
-                genes[line.split("\t")[1].replace("SN:","")].append(int(line.split("\t")[2].replace("LN:","")))
+                genes[line.split("\t")[1].replace("SN:","").split()[0]].append(int(line.split("\t")[2].replace("LN:","")))
 
             # Start processing the aligned reads, skip unaligned [*]
             elif line[0] != "@" and line.split("\t")[5] != "*":
