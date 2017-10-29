@@ -213,7 +213,7 @@ def main():
                     # Reset SAM header, empty list of SAM reads
                     sam_file = [sam_header]
                     sam_reads = []
-                    print "Gene "+gene_previous.split("_")[1]+" processed\n"
+                    print "Gene "+gene_previous+" processed\n"
 
                     # Process current read as in line 92
                     pos_ref = int(line.split("\t")[3]) - 1
