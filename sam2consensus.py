@@ -200,7 +200,7 @@ def main():
                     # If the gene has real insertions produce a SAM for verification and
                     # eliminate insertions with low coverage (errors)
                     if real_insertions_coordinates != []:
-                        print gene_previous.split("_")[1]+" contains insertion(s), a separate SAM file will be additionally created for this gene."
+                        print gene_previous+" contains insertion(s), a separate SAM file will be additionally created for this gene."
                         sam_file.append("@SQ"+"\t"+"SN:"+gene_previous+"\t"+"LN:"+str(genes[gene_previous][-2]))
                         for read in sam_reads:
                             sam_file.append(read)
@@ -248,7 +248,7 @@ def main():
                 print "Insertion detected: coverage at sides of insertion: "+str(cov_at_edges)+", insertion coverage: "+str(insertions[gene_current].count(ins))+", coord/motif: "+str(ins)
         
         if real_insertions_coordinates != []:
-            print gene_current.split("_")[1]+" contains insertion(s), a separate SAM file will be additionally created for this gene."
+            print gene_current+" contains insertion(s), a separate SAM file will be additionally created for this gene."
             sam_file.append("@SQ"+"\t"+"SN:"+gene_current+"\t"+"LN:"+str(genes[gene_current][-2]))
             for read in sam_reads:
                 sam_file.append(read)
