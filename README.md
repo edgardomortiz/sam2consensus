@@ -30,8 +30,8 @@ optional arguments:
   -o OUTFOLDER, --outfolder OUTFOLDER
                         Name of output folder, default=same folder as input
   -p PREFIX, --prefix PREFIX
-                        Prefix for output file name, e.g. sample name,
-                        default=filename
+                        Prefix for output file name, default=input filename
+                        without .sam extension
 ```
 
 ## _Examples_

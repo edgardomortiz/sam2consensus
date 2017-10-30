@@ -94,7 +94,7 @@ def main():
     parser.add_argument("-o", "--outfolder", action="store", dest="outfolder", default="./",
         help="Name of output folder, default=same folder as input")
     parser.add_argument("-p", "--prefix", action="store", dest="prefix", default="",
-    	help="Prefix for output file name, e.g. sample name, default=filename")
+    	help="Prefix for output file name, default=input filename without .sam extension")
     args = parser.parse_args()
 
     filename = args.filename
