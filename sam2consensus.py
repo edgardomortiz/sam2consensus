@@ -206,7 +206,7 @@ def main():
                         sam_file.append("@SQ"+"\t"+"SN:"+gene_previous+"\t"+"LN:"+str(genes[gene_previous][-2]))
                         for read in sam_reads:
                             sam_file.append(read)
-                        outfile = open(outfolder+gene_previous+"_"+prefix+".sam", "w")
+                        outfile = open(outfolder+gene_previous+"_to_"+prefix+".sam", "w")
                         outfile.write("\n".join(sam_file)+"\n")
                         insertions[gene_previous] = [real_insertions_coordinates,real_insertions_motifs]
                     else:
@@ -254,7 +254,7 @@ def main():
             sam_file.append("@SQ"+"\t"+"SN:"+gene_current+"\t"+"LN:"+str(genes[gene_current][-2]))
             for read in sam_reads:
                 sam_file.append(read)
-            outfile = open(outfolder+gene_current+"_"+prefix+".sam", "w")
+            outfile = open(outfolder+gene_current+"_to_"+prefix+".sam", "w")
             outfile.write("\n".join(sam_file)+"\n")
             insertions[gene_current] = [real_insertions_coordinates,real_insertions_motifs]
         else:
