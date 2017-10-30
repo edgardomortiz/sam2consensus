@@ -100,7 +100,7 @@ def main():
     filename = args.filename
     cons_threshold = args.cons_threshold
     if args.prefix == "":
-    	prefix = args.filename.split("/")[-1].split(".")[-2]
+    	prefix = ".".join(args.filename.split(".")[:-1]).split("/")[-1]   # Input filename without extension
     else:
     	prefix = args.prefix
     outfolder = args.outfolder
@@ -115,8 +115,8 @@ def main():
         genes = {}                                              # Container of sequences per gene
         insertions = {}                                         # Container for insertions with coordinates per gene
         gene_previous = ""                                      # Stores name of previous gene processed
-        sam_file = []
-        sam_header = ""                                           # Container for SAM reads in case of insertions
+        sam_file = []                                           # Container for SAM file whe insertions are present
+        sam_header = ""                                         # Store the SAM header
         sam_reads = []                                          # Container for reads to be written to the SAM
 
         for line in mapfile:
@@ -129,23 +129,25 @@ def main():
             elif line.startswith("@SQ"):
 
                 # Obtain the name of the first gene in the file
+                gene_name = line.split("\t")[1].replace("SN:","").split()[0] # Get gene name, skip description if present
+
                 if gene_previous == "":
-                    gene_previous = line.split("\t")[1].replace("SN:","").split()[0]
+                    gene_previous = gene_name
 
                 # Populate empty dictionary, values to be store in a list per gene
-                genes[line.split("\t")[1].replace("SN:","").split()[0]] = []
-                insertions[line.split("\t")[1].replace("SN:","").split()[0]] = []
+                genes[gene_name] = []
+                insertions[gene_name] = []
 
                 # Populate each gene with as many empty nucleotides as the reference
                 for nuc in range(0, int(line.split("\t")[2].replace("LN:",""))):
-                    genes[line.split("\t")[1].replace("SN:","").split()[0]].append({"A":0,"C":0,"T":0,"G":0,"-":0,"N":0})
+                    genes[gene_name].append({"A":0,"C":0,"T":0,"G":0,"-":0,"N":0})
 
                 # Also add the length of each gene after the list of nucleotides
-                genes[line.split("\t")[1].replace("SN:","").split()[0]].append(int(line.split("\t")[2].replace("LN:","")))
+                genes[gene_name].append(int(line.split("\t")[2].replace("LN:","")))
 
             # Start processing the aligned reads, skip unaligned [*]
             elif line[0] != "@" and line.split("\t")[5] != "*":
-                gene_current = line.split("\t")[2].split()[0]
+                gene_current = line.split("\t")[2].split()[0] # Get gene name, skip description if present
 
                 # If we haven't started processing the next gene...
                 if gene_current == gene_previous:
@@ -195,7 +197,7 @@ def main():
                         if (insertions[gene_previous].count(ins) >= (cov_at_edges-insertions[gene_previous].count(ins))) and (insertions[gene_previous].count(ins) >= cov_at_edges*cons_threshold):
                             real_insertions_coordinates.append(ins[0])
                             real_insertions_motifs.append(ins[1])
-                            print "Insertion detected, coverage at sides of insertion: "+str(cov_at_edges)+", insertion coverage: "+str(insertions[gene_previous].count(ins))+", coord/motif: "+str(ins)
+                            print "Insertion detected in gene "+gene_previous+", coverage at sides of insertion: "+str(cov_at_edges)+", coverage of the insertion: "+str(insertions[gene_previous].count(ins))+", position/motif: "+str(ins)
 
                     # If the gene has real insertions produce a SAM for verification and
                     # eliminate insertions with low coverage (errors)
@@ -245,7 +247,7 @@ def main():
             if (insertions[gene_current].count(ins) >= (cov_at_edges-insertions[gene_current].count(ins))) and (insertions[gene_current].count(ins) >= cov_at_edges*cons_threshold):
                 real_insertions_coordinates.append(ins[0])
                 real_insertions_motifs.append(ins[1])
-                print "Insertion detected: coverage at sides of insertion: "+str(cov_at_edges)+", insertion coverage: "+str(insertions[gene_current].count(ins))+", coord/motif: "+str(ins)
+                print "Insertion detected in gene "+gene_current+", coverage at sides of insertion: "+str(cov_at_edges)+", coverage of the insertion: "+str(insertions[gene_current].count(ins))+", position/motif: "+str(ins)
         
         if real_insertions_coordinates != []:
             print gene_current+" contains insertion(s), a separate SAM file will be additionally created for this gene."
@@ -330,8 +332,8 @@ def main():
 
     # Write fasta output files
     for gene in fastas:
-        outfile = open(outfolder+gene+"_"+prefix+".fasta", "w")
-        outfile.write(">"+prefix+" "+prefix+", "+gene+", coverage "+str(genes[gene][-1])+"\n"+fastas[gene]+"\n")
+        outfile = open(outfolder+prefix+"_to_"+gene+"_cons"+str(cons_threshold)+".fasta", "w")
+        outfile.write(">"+prefix+" Mapped to: "+gene+", consensus threshold: "+str(cons_threshold)+", coverage: "+str(genes[gene][-1])+"\n"+fastas[gene]+"\n")
 
 
 
