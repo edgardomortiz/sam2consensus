@@ -95,6 +95,10 @@ def main():
         help="Name of output folder, default=same folder as input")
     parser.add_argument("-p", "--prefix", action="store", dest="prefix", default="",
     	help="Prefix for output file name, default=input filename without .sam extension")
+    parser.add_argument("-s", "--sam-verify", action="store_true", dest="sam_verify", default=False,
+        help="Enable creation of individual SAM files per gene for verification of insertion")
+    parser.add_argument("-f", "--fill", action="store", dest="fill", default="-",
+        help="Character for padding regions not covered in the reference, default= - (gap)")
     args = parser.parse_args()
 
     filename = args.filename
@@ -104,6 +108,10 @@ def main():
     else:
     	prefix = args.prefix
     outfolder = args.outfolder
+
+    sam_verify = args.sam_verify
+
+    fill = args.fill
 
     print "Processing sample "+prefix+" ...\n"
     
@@ -202,12 +210,13 @@ def main():
                     # If the gene has real insertions produce a SAM for verification and
                     # eliminate insertions with low coverage (errors)
                     if real_insertions_coordinates != []:
-                        print gene_previous+" contains insertion(s), a separate SAM file will be additionally created for this gene."
-                        sam_file.append("@SQ"+"\t"+"SN:"+gene_previous+"\t"+"LN:"+str(genes[gene_previous][-2]))
-                        for read in sam_reads:
-                            sam_file.append(read)
-                        outfile = open(outfolder+gene_previous+"_to_"+prefix+".sam", "w")
-                        outfile.write("\n".join(sam_file)+"\n")
+                        if sam_verify == True:
+                            print gene_previous+" contains insertion(s), a separate SAM file will be additionally created for this gene."
+                            sam_file.append("@SQ"+"\t"+"SN:"+gene_previous+"\t"+"LN:"+str(genes[gene_previous][-2]))
+                            for read in sam_reads:
+                                sam_file.append(read)
+                            outfile = open(outfolder+gene_previous+"_to_"+prefix+".sam", "w")
+                            outfile.write("\n".join(sam_file)+"\n")
                         insertions[gene_previous] = [real_insertions_coordinates,real_insertions_motifs]
                     else:
                         del insertions[gene_previous]
@@ -250,12 +259,13 @@ def main():
                 print "Insertion detected in gene "+gene_current+", coverage at sides of insertion: "+str(cov_at_edges)+", coverage of the insertion: "+str(insertions[gene_current].count(ins))+", position/motif: "+str(ins)
         
         if real_insertions_coordinates != []:
-            print gene_current+" contains insertion(s), a separate SAM file will be additionally created for this gene."
-            sam_file.append("@SQ"+"\t"+"SN:"+gene_current+"\t"+"LN:"+str(genes[gene_current][-2]))
-            for read in sam_reads:
-                sam_file.append(read)
-            outfile = open(outfolder+gene_current+"_to_"+prefix+".sam", "w")
-            outfile.write("\n".join(sam_file)+"\n")
+            if sam_verify == True:
+                print gene_current+" contains insertion(s), a separate SAM file will be additionally created for this gene."
+                sam_file.append("@SQ"+"\t"+"SN:"+gene_current+"\t"+"LN:"+str(genes[gene_current][-2]))
+                for read in sam_reads:
+                    sam_file.append(read)
+                outfile = open(outfolder+gene_current+"_to_"+prefix+".sam", "w")
+                outfile.write("\n".join(sam_file)+"\n")
             insertions[gene_current] = [real_insertions_coordinates,real_insertions_motifs]
         else:
             del insertions[gene_current]
@@ -298,9 +308,9 @@ def main():
             cov_site = float(sum(genes[gene][pos].values()))
             if cov_site == 0:
                 if gene not in fastas:
-                    fastas[gene] = "N"
+                    fastas[gene] = fill
                 else:
-                    fastas[gene] += "N"
+                    fastas[gene] += fill
             elif count_nucs[0][1] >= cons_threshold*cov_site:
                 if gene not in fastas:
                     fastas[gene] = count_nucs[0][0]
