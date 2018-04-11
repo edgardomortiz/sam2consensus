@@ -21,7 +21,7 @@ a separate SAM file just for the particular gene for verification purposes.
 
 __author__      = "Edgardo M. Ortiz"
 __credits__     = "Deise J.P. Gonçalves"
-__version__     = "1.3"
+__version__     = "1.4"
 __email__       = "e.ortiz.v@gmail.com"
 __date__        = "2017-10-07"
 
@@ -91,14 +91,16 @@ def main():
         help="Name of the SAM file, SAM must be sorted before!")
     parser.add_argument("-c", "--consensus-threshold", action="store", dest="cons_threshold", type=float, default=0.25,
         help="Consensus threshold sensu Geneious, default=0.25")
+    parser.add_argument("-m", "--min-depth", action="store", dest="min_depth", type=int, default=5,
+    	help="Minimum read depth at each site to report the nucleotide in the consensus, default=5")
     parser.add_argument("-o", "--outfolder", action="store", dest="outfolder", default="./",
         help="Name of output folder, default=same folder as input")
     parser.add_argument("-p", "--prefix", action="store", dest="prefix", default="",
     	help="Prefix for output file name, default=input filename without .sam extension")
-    parser.add_argument("-s", "--sam-verify", action="store_true", dest="sam_verify", default=False,
-        help="Enable creation of individual SAM files per gene for verification of insertion")
     parser.add_argument("-f", "--fill", action="store", dest="fill", default="-",
         help="Character for padding regions not covered in the reference, default= - (gap)")
+    parser.add_argument("-s", "--sam-verify", action="store_true", dest="sam_verify", default=False,
+        help="Enable creation of individual SAM files per gene for verification of insertion, disabled by default")
     args = parser.parse_args()
 
     filename = args.filename
@@ -109,9 +111,11 @@ def main():
     	prefix = args.prefix
     outfolder = args.outfolder
 
-    sam_verify = args.sam_verify
+    min_depth = args.min_depth
 
     fill = args.fill
+
+    sam_verify = args.sam_verify
 
     print "Processing sample "+prefix+" ...\n"
     
@@ -142,7 +146,7 @@ def main():
                 if gene_previous == "":
                     gene_previous = gene_name
 
-                # Populate empty dictionary, values to be store in a list per gene
+                # Populate empty dictionary, values to be stored in a list per gene
                 genes[gene_name] = []
                 insertions[gene_name] = []
 
@@ -202,10 +206,11 @@ def main():
                             cov_at_edges = float(sum(genes[gene_previous][ins[0]].values()))
 
                         # If the insertion has acceptable coverage accept it as real
-                        if (insertions[gene_previous].count(ins) >= (cov_at_edges-insertions[gene_previous].count(ins))) and (insertions[gene_previous].count(ins) >= cov_at_edges*cons_threshold):
-                            real_insertions_coordinates.append(ins[0])
-                            real_insertions_motifs.append(ins[1])
-                            print "Insertion detected in gene "+gene_previous+", coverage at sides of insertion: "+str(cov_at_edges)+", coverage of the insertion: "+str(insertions[gene_previous].count(ins))+", position/motif: "+str(ins)
+                        if cov_at_edges >= min_depth:
+	                        if (insertions[gene_previous].count(ins) >= (cov_at_edges-insertions[gene_previous].count(ins))) and (insertions[gene_previous].count(ins) >= cov_at_edges*cons_threshold):
+	                            real_insertions_coordinates.append(ins[0])
+	                            real_insertions_motifs.append(ins[1])
+	                            print "Insertion detected in gene "+gene_previous+", coverage at sides of insertion: "+str(cov_at_edges)+", coverage of the insertion: "+str(insertions[gene_previous].count(ins))+", position/motif: "+str(ins)
 
                     # If the gene has real insertions produce a SAM for verification and
                     # eliminate insertions with low coverage (errors)
@@ -253,10 +258,12 @@ def main():
                 cov_at_edges = float(sum(genes[gene_current][ins[0]].values())+sum(genes[gene_current][ins[0]+1].values()))/2
             else:
                 cov_at_edges = float(sum(genes[gene_current][ins[0]].values()))
-            if (insertions[gene_current].count(ins) >= (cov_at_edges-insertions[gene_current].count(ins))) and (insertions[gene_current].count(ins) >= cov_at_edges*cons_threshold):
-                real_insertions_coordinates.append(ins[0])
-                real_insertions_motifs.append(ins[1])
-                print "Insertion detected in gene "+gene_current+", coverage at sides of insertion: "+str(cov_at_edges)+", coverage of the insertion: "+str(insertions[gene_current].count(ins))+", position/motif: "+str(ins)
+
+            if cov_at_edges >= min_depth:
+	            if (insertions[gene_current].count(ins) >= (cov_at_edges-insertions[gene_current].count(ins))) and (insertions[gene_current].count(ins) >= cov_at_edges*cons_threshold):
+	                real_insertions_coordinates.append(ins[0])
+	                real_insertions_motifs.append(ins[1])
+	                print "Insertion detected in gene "+gene_current+", coverage at sides of insertion: "+str(cov_at_edges)+", coverage of the insertion: "+str(insertions[gene_current].count(ins))+", position/motif: "+str(ins)
         
         if real_insertions_coordinates != []:
             if sam_verify == True:
@@ -306,7 +313,7 @@ def main():
         for pos in range(0, genes[gene][-2]):
             count_nucs = list(sorted(genes[gene][pos].iteritems(), key=operator.itemgetter(1), reverse=True)[:2])
             cov_site = float(sum(genes[gene][pos].values()))
-            if cov_site == 0:
+            if cov_site < min_depth:
                 if gene not in fastas:
                     fastas[gene] = fill
                 else:
