@@ -124,12 +124,12 @@ def main():
         outfolder += "/"
     
     if filename.endswith(".gz"):
-        opener = gzip.open
+        opener = gzip.open(filename, "rb")
     else:
-        opener = open
+        opener = open(filename, "r")
 
     # Process the SAM file in a single pass
-    with io.TextIOWrapper(io.BufferedReader(opener(filename))) as mapfile:
+    with opener as mapfile:
         genes = {}                                              # Container of sequences per gene
         insertions = {}                                         # Container for insertions with coordinates per gene
         gene_previous = ""                                      # Stores name of previous gene processed
