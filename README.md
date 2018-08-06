@@ -7,7 +7,7 @@ gene sequences as reference, then it calculates the consensus sequence per gene 
 considering the reference. It adds insertions and can take a custom consensus threshold,
 the consensus method is the same as the one described for [Geneious](http://assets.geneious.com/manual/8.1/GeneiousManualse41.html). Regions that were not covered will be filled with Ns.
 
-Input SAM files have to be sorted an can be compressed with `gzip` (BAM is not supported). The processing is faster if the SAM file contains only mapped reads. Original reference FASTAs are not necessary.
+Input SAM files have to be sorted and can be compressed with `gzip` (BAM is not supported). The processing is faster if the SAM file contains only mapped reads. Original reference FASTAs are not necessary.
 
 It will produce a FASTA sequence per gene, and in case the gene has insertions it will also create
 a separate SAM file just for the particular gene for verification purposes.

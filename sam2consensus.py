@@ -31,6 +31,7 @@ import re
 import operator
 import argparse
 import gzip
+import io
 
 def parsecigar(cigarstring, seq, pos_ref):
     '''
@@ -128,7 +129,7 @@ def main():
         opener = open
 
     # Process the SAM file in a single pass
-    with opener(filename) as mapfile:
+    with io.TextIOWrapper(io.BufferedReader(opener(filename))) as mapfile:
         genes = {}                                              # Container of sequences per gene
         insertions = {}                                         # Container for insertions with coordinates per gene
         gene_previous = ""                                      # Stores name of previous gene processed
