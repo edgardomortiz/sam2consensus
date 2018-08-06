@@ -21,7 +21,7 @@ a separate SAM file just for the particular gene for verification purposes.
 
 __author__      = "Edgardo M. Ortiz"
 __credits__     = "Deise J.P. Gonçalves"
-__version__     = "1.4"
+__version__     = "1.5"
 __email__       = "e.ortiz.v@gmail.com"
 __date__        = "2017-10-07"
 
@@ -30,7 +30,7 @@ import sys
 import re
 import operator
 import argparse
-
+import gzip
 
 def parsecigar(cigarstring, seq, pos_ref):
     '''
@@ -88,7 +88,7 @@ def parsecigar(cigarstring, seq, pos_ref):
 def main():
     parser = argparse.ArgumentParser(description="Calculates the consensus sequence from reads aligned to a multi-gene fasta reference")
     parser.add_argument("-i", "--input", action="store", dest="filename", required=True,
-        help="Name of the SAM file, SAM must be sorted before!")
+        help="Name of the SAM file, SAM must be sorted and can be compressed with gzip")
     parser.add_argument("-c", "--consensus-threshold", action="store", dest="cons_threshold", type=float, default=0.25,
         help="Consensus threshold sensu Geneious, default=0.25")
     parser.add_argument("-m", "--min-depth", action="store", dest="min_depth", type=int, default=5,
@@ -122,8 +122,13 @@ def main():
     if outfolder[-1] != "/":
         outfolder += "/"
     
+    if filename.endswith(".gz"):
+        opener = gzip.open
+    else:
+        opener = open
+
     # Process the SAM file in a single pass
-    with open(filename) as mapfile:
+    with opener(filename) as mapfile:
         genes = {}                                              # Container of sequences per gene
         insertions = {}                                         # Container for insertions with coordinates per gene
         gene_previous = ""                                      # Stores name of previous gene processed
