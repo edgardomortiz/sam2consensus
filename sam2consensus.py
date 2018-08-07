@@ -107,7 +107,7 @@ def main():
     filename = args.filename
     cons_threshold = args.cons_threshold
     if args.prefix == "":
-    	prefix = ".".join(args.filename.split(".")[:-1]).split("/")[-1]   # Input filename without extension
+    	prefix = ".".join(args.filename.split("/")[-1]).split("/")[0]   # Input filename without extension
     else:
     	prefix = args.prefix
     outfolder = args.outfolder
@@ -295,21 +295,44 @@ def main():
 
 
     # Dictionary to translate IUPAC ambiguities
-    amb = {("-","A"):"A",
-           ("-","C"):"C",
-           ("-","G"):"G",
-           ("-","N"):"-",
-           ("-","T"):"T",
-           ("A","C"):"M",
-           ("A","G"):"R",
-           ("A","N"):"A",
-           ("A","T"):"W",
-           ("C","G"):"S",
-           ("C","N"):"C",
-           ("C","T"):"Y",
-           ("G","N"):"G",
-           ("G","T"):"K",
-           ("N","T"):"T"}
+    amb = {"-A":"a",
+           "-C":"c",
+           "-G":"g",
+           "-N":"-",
+           "-T":"t",
+           "AC":"M",
+           "AG":"R",
+           "AN":"a",
+           "AT":"W",
+           "CG":"S",
+           "CN":"c",
+           "CT":"Y",
+           "GN":"g",
+           "GT":"K",
+           "NT":"t",
+           "-AC":"m",
+           "-AG":"r",
+           "-AN":"a",
+           "-AT":"w",
+           "-CG":"s",
+           "-CN":"c",
+           "-CT":"y",
+           "-GN":"g",
+           "-GT":"k",
+           "-NT":"t",
+           "ACT":"H",
+           "AGT":"D",
+           "CGT":"B",
+           "ACG":"V",
+           "-ACT":"h",
+           "-AGT":"d",
+           "-CGT":"b",
+           "-ACG":"v",       
+           "ACNT":"h",
+           "AGNT":"d",
+           "CGNT":"b",
+           "ACGN":"v",
+           "ACGT":"N"}
 
 
 
@@ -336,12 +359,29 @@ def main():
                     fastas[gene] = count_nucs[0][0]
                 else:
                     fastas[gene] += count_nucs[0][0]
+            elif count_nucs[0][1] + count_nucs[1][1] >= cons_threshold*cov_site:
+                genotype = "".join(sorted([count_nucs[0][0],count_nucs[1][0]]))
+                if gene not in fastas:
+                    fastas[gene] = amb[genotype]
+                else:
+                    fastas[gene] += amb[genotype]
+            elif count_nucs[0][1] + count_nucs[1][1] + count_nucs[2][1] >= cons_threshold*cov_site:
+                genotype = "".join(sorted([count_nucs[0][0],count_nucs[1][0],count_nucs[2][0]]))
+                if gene not in fastas:
+                    fastas[gene] = amb[genotype]
+                else:
+                    fastas[gene] += amb[genotype]
+            elif count_nucs[0][1] + count_nucs[1][1] + count_nucs[2][1] + count_nucs[3][1] >= cons_threshold*cov_site:
+                genotype = "".join(sorted([count_nucs[0][0],count_nucs[1][0],count_nucs[2][0],counts_nucs[3][0]]))
+                if gene not in fastas:
+                    fastas[gene] = amb[genotype]
+                else:
+                    fastas[gene] += amb[genotype]
             else:
                 if gene not in fastas:
-                    fastas[gene] = amb[tuple(sorted((count_nucs[0][0],count_nucs[1][0])))]
+                    fastas[gene] = "N"
                 else:
-                    fastas[gene] += amb[tuple(sorted((count_nucs[0][0],count_nucs[1][0])))]
-
+                    fastas[gene] += "N"
 
 
     # Add insertions for genes with real insertions
@@ -364,7 +404,7 @@ def main():
     for gene in fastas:
         outfile = open(outfolder+prefix+"_to_"+gene+"_cons"+str(cons_threshold)+".fasta", "w")
         outfile.write(">"+prefix+" Mapped to: "+gene+", consensus threshold: "+str(cons_threshold)+", coverage: "+str(genes[gene][-1])+"\n"+fastas[gene]+"\n")
-    outfile.close()
+        outfile.close()
 
 if __name__ == "__main__":
     main()
