@@ -107,7 +107,7 @@ def main():
     filename = args.filename
     cons_threshold = args.cons_threshold
     if args.prefix == "":
-    	prefix = ".".join(args.filename.split("/")[-1]).split("/")[0]   # Input filename without extension
+    	prefix = "".join(args.filename.split("/")[-1]).split(".")[0]   # Input filename without extension
     else:
     	prefix = args.prefix
     outfolder = args.outfolder
