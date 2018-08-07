@@ -188,7 +188,8 @@ def main():
                     gene_previous = gene_current
 
                     # Add the read in case a SAM is produced for this gene
-                    sam_reads.append(line.strip("\n"))
+                    if sam_verify == True:
+                        sam_reads.append(line.strip("\n"))
 
                 # If we started processing the next gene, stop and summarize the previous gene,
                 # then continue as normal for next gene...
@@ -247,7 +248,8 @@ def main():
                     for ins in insert:
                         insertions[gene_current].append(ins)
                     gene_previous = gene_current
-                    sam_reads.append(line.strip("\n"))
+                    if sam_verify == True:
+                        sam_reads.append(line.strip("\n"))
 
         # For the last read of the last gene only, 
         # same process as line 117
