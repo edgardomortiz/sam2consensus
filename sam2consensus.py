@@ -136,6 +136,7 @@ def main():
         sam_file = []                                           # Container for SAM file whe insertions are present
         sam_header = ""                                         # Store the SAM header
         sam_reads = []                                          # Container for reads to be written to the SAM
+        read_count = 0
 
         for line in mapfile:
         	# Store SAM header
@@ -165,6 +166,10 @@ def main():
 
             # Start processing the aligned reads, skip unaligned [*]
             elif line[0] != "@" and line.split("\t")[5] != "*":
+                read_count += 1
+                if read_count % 1000000 == 0:
+                    print str(read_count)+" reads processed"
+                    
                 gene_current = line.split("\t")[2].split()[0] # Get gene name, skip description if present
 
                 # If we haven't started processing the next gene...
