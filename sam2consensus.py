@@ -169,7 +169,7 @@ def main():
                 read_count += 1
                 if read_count % 1000000 == 0:
                     print str(read_count)+" reads processed"
-                    
+
                 gene_current = line.split("\t")[2].split()[0] # Get gene name, skip description if present
 
                 # If we haven't started processing the next gene...
@@ -364,8 +364,7 @@ def main():
     for gene in fastas:
         outfile = open(outfolder+prefix+"_to_"+gene+"_cons"+str(cons_threshold)+".fasta", "w")
         outfile.write(">"+prefix+" Mapped to: "+gene+", consensus threshold: "+str(cons_threshold)+", coverage: "+str(genes[gene][-1])+"\n"+fastas[gene]+"\n")
-
-
+    outfile.close()
 
 if __name__ == "__main__":
     main()
