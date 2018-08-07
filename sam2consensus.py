@@ -347,7 +347,7 @@ def main():
     fastas = {}
     for gene in genes:
         for pos in range(0, genes[gene][-2]):
-            count_nucs = list(sorted(genes[gene][pos].iteritems(), key=operator.itemgetter(1), reverse=True)[:2])
+            count_nucs = list(sorted(genes[gene][pos].iteritems(), key=operator.itemgetter(1), reverse=True))
             cov_site = float(sum(genes[gene][pos].values()))
             if cov_site < min_depth:
                 if gene not in fastas:
