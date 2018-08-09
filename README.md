@@ -2,29 +2,26 @@
 Get the consensus sequences for reads mapped to a reference made of multiple separate genes.
 
 ## _Brief description_
-The program takes as input a SAM file resulting from mapping short reads to a collection of
-gene sequences as reference, then it calculates the consensus sequence per gene without
-considering the reference. It adds insertions and can take a custom consensus threshold,
-the consensus method is the same as the one described for [Geneious](http://assets.geneious.com/manual/8.1/GeneiousManualse41.html). Regions that were not covered will be filled with Ns.
+The program takes as input a SAM file resulting from mapping short reads to a collection of contig sequences as reference, then it calculates the consensus sequence per contig without considering the reference. It adds insertions and can take a custom consensus threshold, the consensus method is the same as the one described for [Geneious](http://assets.geneious.com/manual/8.1/GeneiousManualse41.html). Regions that were not covered will be filled with Ns.
 
 Input SAM files have to be sorted and can be compressed with `gzip` (BAM is not supported). The processing is faster if the SAM file contains only mapped reads. Original reference FASTAs are not necessary.
 
-It will produce a FASTA sequence per gene, and in case the gene has insertions it will also create
-a separate SAM file just for the particular gene for verification purposes.
+It will produce a FASTA sequence per contig, and in case the contig has insertions it can also create a separate SAM file just for the particular contig for verification purposes.
 
 ## _Usage_
 Just type `python sam2consensus.py -h` to show the help of the program:
 ```
 usage: sam2consensus.py [-h] -i FILENAME [-c CONS_THRESHOLD] [-m MIN_DEPTH]
-                        [-o OUTFOLDER] [-p PREFIX] [-f FILL] [-s]
+                        [-o OUTFOLDER] [-p PREFIX] [-f FILL] [-n N] [-s]
 
-Calculates the consensus sequence from reads aligned to a multi-gene fasta
+Calculates the consensus sequence from reads aligned to a multi-contig fasta
 reference
 
 optional arguments:
   -h, --help            show this help message and exit
   -i FILENAME, --input FILENAME
-                        Name of the SAM file, SAM must be sorted before!
+                        Name of the SAM file, SAM must be sorted and can be
+                        compressed with gzip
   -c CONS_THRESHOLD, --consensus-threshold CONS_THRESHOLD
                         Consensus threshold sensu Geneious, default=0.25
   -m MIN_DEPTH, --min-depth MIN_DEPTH
@@ -37,7 +34,9 @@ optional arguments:
                         without .sam extension
   -f FILL, --fill FILL  Character for padding regions not covered in the
                         reference, default= - (gap)
-  -s, --sam-verify      Enable creation of individual SAM files per gene for
+  -n N                  Split FASTA output sequences every n nucleotides,
+                        default=80
+  -s, --sam-verify      Enable creation of individual SAM files per contig for
                         verification of insertion, disabled by default
 ```
 
