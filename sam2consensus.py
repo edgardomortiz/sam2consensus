@@ -6,8 +6,8 @@
 '''
 The program takes as input a SAM file (.sam or .sam.gz) resulting from mapping short reads to a reference (the reference
 sequences can correspond to separate genes for example), then it calculates the consensus sequence from the aligned
-reads alone. A single or multiple consensus thresholds can be specified, the program also adds insertions but
-does not perform indel realignment (i.e. if insertions are important first need to be realigned). The consensus method
+reads alone. A single or multiple consensus thresholds can be specified, the program also adds insertions, if many long
+long insertions are expected, we recommend to perform indel ralignment before for optimal results. The consensus method
 is the one used by Geneious and described in detail in http://assets.geneiious.com/manual/8.1/GeneiousManualse41.html
 
 Regions with no coverage are filled with -s (or a different character if specified). Input SAM files don't need to be
@@ -82,16 +82,16 @@ def main():
 		help="Name of the SAM file, SAM does not need to be sorted and can be compressed with gzip")
 	parser.add_argument("-c", "--consensus-thresholds", action="store", dest="thresholds", type=str, default="0.25",
 		help="List of consensus thresold(s) separated by commas, no spaces, example: -c 0.25,0.75,0.50, default=0.25")
-	parser.add_argument("-m", "--min-depth", action="store", dest="min_depth", type=int, default=2,
-		help="Minimum read depth at each site to report the nucleotide in the consensus, default=2")
+	parser.add_argument("-n", action="store", dest="n", type=int, default=0,
+		help="Split FASTA output sequences every n nucleotides, default=do not split sequence")
 	parser.add_argument("-o", "--outfolder", action="store", dest="outfolder", default="./",
 		help="Name of output folder, default=same folder as input")
 	parser.add_argument("-p", "--prefix", action="store", dest="prefix", default="",
 		help="Prefix for output file name, default=input filename without .sam extension")
+	parser.add_argument("-m", "--min-depth", action="store", dest="min_depth", type=int, default=1,
+		help="Minimum read depth at each site to report the nucleotide in the consensus, default=1")
 	parser.add_argument("-f", "--fill", action="store", dest="fill", default="-",
 		help="Character for padding regions not covered in the reference, default= - (gap)")
-	parser.add_argument("-n", action="store", dest="n", type=int, default=0,
-		help="Split FASTA output sequences every n nucleotides, default=do not split sequence")
 	args = parser.parse_args()
 
 
@@ -336,7 +336,7 @@ def main():
 			# Obtain sequence from the 'sequences' dictionary
 			for pos in range(len(sequences[refname])):
 				if sequences[refname][pos] != []:
-					if coverages[refname][pos] > min_depth:
+					if coverages[refname][pos] >= min_depth:
 						nucs = []
 						cov_nucs = 0
 						for count in sequences[refname][pos]:
@@ -358,29 +358,30 @@ def main():
 					ins_seqout = ""
 					for pos in sorted(insertions[refname]):
 						ins_seqout += fasta_seqout[start:pos]
-						ins_cons = ""
-						for col in range(len(insertions[refname][pos])):
-							nucs = []
-							cov_nucs = 0
-							for count in insertions[refname][pos][col]:
-								if cov_nucs < t*coverages[refname][pos]:
-									nucs     += count[1]
-									cov_nucs += count[0]
+						if coverages[refname][pos] >= min_depth:
+							ins_cons = ""
+							for col in range(len(insertions[refname][pos])):
+								nucs = []
+								cov_nucs = 0
+								for count in insertions[refname][pos][col]:
+									if cov_nucs < t*coverages[refname][pos]:
+										nucs     += count[1]
+										cov_nucs += count[0]
+									else:
+										break
+								if amb["".join(sorted(nucs))] == "-":
+									continue
 								else:
-									break
-							if amb["".join(sorted(nucs))] == "-":
-								continue
-							else:
-								ins_cons += amb["".join(sorted(nucs))]
-							
-						ins_seqout += ins_cons
+									ins_cons += amb["".join(sorted(nucs))]
+								
+							ins_seqout += ins_cons
 						start = pos
 					ins_seqout += fasta_seqout[sorted(insertions[refname].keys())[-1]:]
 					fasta_seqout = ins_seqout
 
 			# Prepare headers for FASTA file
 			# sequence name is: sammplename|consensus_threshold
-			# sequence description is reference:refname coverage:XXX.XXX length:XXXX
+			# sequence description is reference:refname coverage:XXX.XX length:XXXX consensus_threshold:XX%
 			fasta_header = (">"+prefix+"|c"+str(int(t*100))+" reference:"+refname+
 							" coverage:"+str(round(float(sum(coverages[refname]))/float(len(coverages[refname])), 2))+
 							" length:"+str(len(fasta_seqout.replace("-","")))+

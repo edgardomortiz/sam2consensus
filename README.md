@@ -1,68 +1,70 @@
 # sam2consensus
-Get the consensus sequences for reads mapped to a reference made of multiple separate genes.
+Get the consensus sequences for short sequencing reads mapped to a reference. Version 2.0
 
 ## _Brief description_
-The program takes as input a SAM file resulting from mapping short reads to a collection of contig sequences as reference, then it calculates the consensus sequence per contig without considering the reference. It adds insertions and can take a custom consensus threshold, the consensus method is the same as the one described for [Geneious](http://assets.geneious.com/manual/8.1/GeneiousManualse41.html). Regions that were not covered will be filled with Ns.
+The program takes as input a SAM file (.sam or .sam.gz) resulting from mapping short reads to a reference (the reference
+sequences can correspond to separate genes for example), then it calculates the consensus sequence from the aligned
+reads alone. A single or multiple consensus thresholds can be specified, the program also adds insertions, if many long
+long insertions are expected, we recommend to perform indel ralignment before for optimal results. The consensus method
+is the one used by Geneious and described in detail in http://assets.geneiious.com/manual/8.1/GeneiousManualse41.html
 
-Input SAM files have to be sorted and can be compressed with `gzip` (BAM is not supported). The processing is faster if the SAM file contains only mapped reads. Original reference FASTAs are not necessary.
+Regions with no coverage are filled with -s (or a different character if specified). Input SAM files don't need to be
+sorted. Original reference FASTAs are not necessary since the consensus is reference-free.
 
-It will produce a FASTA sequence per contig, and in case the contig has insertions it can also create a separate SAM file just for the particular contig for verification purposes.
+It will produce a FASTA file per reference containing as many sequences as thresholds were specified.
 
 ## _Usage_
 Just type `python sam2consensus.py -h` to show the help of the program:
 ```
-usage: sam2consensus.py [-h] -i FILENAME [-c CONS_THRESHOLD] [-m MIN_DEPTH]
-                        [-o OUTFOLDER] [-p PREFIX] [-f FILL] [-n N] [-s]
+usage: sam2consensus.py [-h] -i FILENAME [-c THRESHOLDS] [-n N] [-o OUTFOLDER]
+                        [-p PREFIX] [-m MIN_DEPTH] [-f FILL]
 
-Calculates the consensus sequence from reads aligned to a multi-contig fasta
-reference
+Calculates the consensus sequence from reads aligned in SAM format
 
 optional arguments:
   -h, --help            show this help message and exit
   -i FILENAME, --input FILENAME
-                        Name of the SAM file, SAM must be sorted and can be
-                        compressed with gzip
-  -c CONS_THRESHOLD, --consensus-threshold CONS_THRESHOLD
-                        Consensus threshold sensu Geneious, default=0.25
-  -m MIN_DEPTH, --min-depth MIN_DEPTH
-                        Minimum read depth at each site to report the
-                        nucleotide in the consensus, default=5
+                        Name of the SAM file, SAM does not need to be sorted
+                        and can be compressed with gzip
+  -c THRESHOLDS, --consensus-thresholds THRESHOLDS
+                        List of consensus thresold(s) separated by commas, no
+                        spaces, example: -c 0.25,0.75,0.50, default=0.25
+  -n N                  Split FASTA output sequences every n nucleotides,
+                        default=do not split sequence
   -o OUTFOLDER, --outfolder OUTFOLDER
                         Name of output folder, default=same folder as input
   -p PREFIX, --prefix PREFIX
                         Prefix for output file name, default=input filename
                         without .sam extension
+  -m MIN_DEPTH, --min-depth MIN_DEPTH
+                        Minimum read depth at each site to report the
+                        nucleotide in the consensus, default=2
   -f FILL, --fill FILL  Character for padding regions not covered in the
                         reference, default= - (gap)
-  -n N                  Split FASTA output sequences every n nucleotides,
-                        default=80
-  -s, --sam-verify      Enable creation of individual SAM files per contig for
-                        verification of insertion, disabled by default
 ```
 
 ## _Examples_
+In the following examples, if you added the script to the `PATH` you can omit `python` from the commands.
+
 _Example 1:_ Using the default consensus threshold of 0.25:
 ```bash
 python sam2consensus.py -i myfile.sam
 ```
 
-_Example 2:_ Using a custom consensus threshold of 0.50, and increasing the minimum depth of coverage to 10:
+_Example 2:_ Using multiple consensus thresholds of 0.25, 0.50, and 0.75 and specifying an output folder:
 ```bash
-python sam2consensus.py -i myfile.sam -c 0.5 -m 10
+python sam2consensus.py -i myfile.sam -c 0.25,0.50,0.75 -o results
 ```
 
-_Example 3:_ Using a custom consensus threshold of 0.75 and specifying a different folder for output:
+_Example 3:_ Using a custom consensus threshold of 0.75 and changing padding character for uncovered regions to "N":
 ```bash
-python sam2consensus.py -i myfile.sam -c 0.75 -o ./outfiles/
+python sam2consensus.py -i myfile.sam -c 0.75 -f N
 ```
 
-_Example 4:_ Specifying a prefix "sample1" and filling gaps with Ns:
+_Example 4:_ Specifying a prefix "sample1" and increasing minimum mapping depth to 10:
 ```bash
-python sam2consensus.py -i myfile.sam -pre sample1 -f N
+python sam2consensus.py -i myfile.sam -pre sample1 -m 10
 ```
-
-
-## _Our pipeline for obtaining the SAM file_
 
 ## _Credits_
 - Code: [Edgardo M. Ortiz](mailto:e.ortiz.v@gmail.com)
