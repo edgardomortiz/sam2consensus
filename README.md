@@ -6,7 +6,7 @@ The program takes as input a SAM file (.sam or .sam.gz) resulting from mapping s
 sequences can correspond to separate genes for example), then it calculates the consensus sequence from the aligned
 reads alone. A single or multiple consensus thresholds can be specified, the program also adds insertions, if many long
 long insertions are expected, we recommend to perform indel ralignment before for optimal results. The consensus method
-is the one used by Geneious and described in detail in http://assets.geneiious.com/manual/8.1/GeneiousManualse41.html
+is the one used by Geneious and described in detail in http://assets.geneious.com/manual/8.1/GeneiousManualse41.html
 
 Regions with no coverage are filled with -s (or a different character if specified). Input SAM files don't need to be
 sorted. Original reference FASTAs are not necessary since the consensus is reference-free.
