@@ -332,10 +332,12 @@ def main():
 		
 			fasta_seqout = ""
 			fasta_header = ""
+			sumcov = 0
 
 			# Obtain sequence from the 'sequences' dictionary
 			for pos in range(len(sequences[refname])):
 				if sequences[refname][pos] != []:
+					sumcov += coverages[refname][pos]
 					if coverages[refname][pos] >= min_depth:
 						nucs = []
 						cov_nucs = 0
@@ -346,44 +348,36 @@ def main():
 							else:
 								break
 						fasta_seqout += amb["".join(sorted(nucs))]
+
+						# Add insertions when applicable
+						if refname in insertions:
+							if pos in insertions[refname]:
+								for col in range(len(insertions[refname][pos])):
+									nucs = []
+									cov_nucs = 0
+									for count in insertions[refname][pos][col]:
+										if cov_nucs < t*coverages[refname][pos]:
+											nucs     += count[1]
+											cov_nucs += count[0]
+										else:
+											break
+									if amb["".join(sorted(nucs))] == "-":
+										continue
+									else:
+										fasta_seqout += amb["".join(sorted(nucs))]
+										sumcov += sum([insertions[refname][pos][col][k]
+													  for k in insertions[refname][pos][col]
+													  if k != "-"])
 					else:
 						fasta_seqout += fill
 				else:
 					fasta_seqout += fill
 
-			# Add insertions when applicable
-			if refname in insertions:
-				if insertions[refname] != []:
-					start = 0
-					ins_seqout = ""
-					for pos in sorted(insertions[refname]):
-						ins_seqout += fasta_seqout[start:pos]
-						if coverages[refname][pos] >= min_depth:
-							ins_cons = ""
-							for col in range(len(insertions[refname][pos])):
-								nucs = []
-								cov_nucs = 0
-								for count in insertions[refname][pos][col]:
-									if cov_nucs < t*coverages[refname][pos]:
-										nucs     += count[1]
-										cov_nucs += count[0]
-									else:
-										break
-								if amb["".join(sorted(nucs))] == "-":
-									continue
-								else:
-									ins_cons += amb["".join(sorted(nucs))]
-								
-							ins_seqout += ins_cons
-						start = pos
-					ins_seqout += fasta_seqout[sorted(insertions[refname].keys())[-1]:]
-					fasta_seqout = ins_seqout
-
 			# Prepare headers for FASTA file
 			# sequence name is: sammplename|consensus_threshold
 			# sequence description is reference:refname coverage:XXX.XX length:XXXX consensus_threshold:XX%
 			fasta_header = (">"+prefix+"|c"+str(int(t*100))+" reference:"+refname+
-							" coverage:"+str(round(float(sum(coverages[refname]))/float(len(coverages[refname])), 2))+
+							" coverage:"+str(round(float(sumcov)/float(len(fasta_seqout)), 2))+
 							" length:"+str(len(fasta_seqout.replace("-","")))+
 							" consensus_threshold:"+str(int(t*100))+"%")
 
