@@ -365,9 +365,7 @@ def main():
 										continue
 									else:
 										fasta_seqout += amb["".join(sorted(nucs))]
-										sumcov += sum([insertions[refname][pos][col][k]
-													  for k in insertions[refname][pos][col]
-													  if k != "-"])
+										sumcov += coverages[refname][pos]
 					else:
 						fasta_seqout += fill
 				else:
