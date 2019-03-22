@@ -2,20 +2,27 @@
 # -*- coding: utf-8 -*-
 
 
-
 '''
-The program takes as input a SAM file (.sam or .sam.gz) resulting from mapping short reads to a reference (the reference
-sequences can correspond to separate genes for example), then it calculates the consensus sequence from the aligned
-reads alone. A single or multiple consensus thresholds can be specified, the program also adds insertions, if many long
-long insertions are expected, we recommend to perform indel ralignment before for optimal results. The consensus method
-is the one used by Geneious and described in detail in http://assets.geneious.com/manual/8.1/GeneiousManualse41.html
++------------------------------------------------------------------+
+| sam2consensus.py: extract the consensus sequence from a SAM file |
++------------------------------------------------------------------+
 
-Regions with no coverage are filled with -s (or a different character if specified). Input SAM files don't need to be
-sorted. Original reference FASTAs are not necessary since the consensus is reference-free.
+The program takes as input a SAM file (.sam or .sam.gz) resulting from mapping 
+short reads to a reference (the reference sequences can correspond to separate 
+genes for example), then it calculates the consensus sequence from the aligned
+reads alone. A single or multiple consensus thresholds can be specified, the 
+program also adds insertions, if many long insertions are expected, we recommend 
+to perform indel ralignment before for optimal results. The consensus method is 
+the one used by Geneious and described in detail in 
+http://assets.geneious.com/manual/8.1/GeneiousManualse41.html
 
-It will produce a FASTA file per reference containing as many sequences as thresholds were specified.
+Regions with no coverage are filled with -s (or a different character if 
+specified). Input SAM files don't need to be sorted. Original reference FASTAs 
+are not necessary since the consensus is reference-free.
+
+It will produce a FASTA file per reference containing as many sequences as 
+thresholds were specified.
 '''
-
 
 
 __author__      = "Edgardo M. Ortiz"
@@ -77,7 +84,7 @@ def parsecigar(cigarstring, seq, pos_ref):
 
 
 def main():
-	parser = argparse.ArgumentParser(description="Calculates the consensus sequence from reads aligned in SAM format")
+	parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
 	parser.add_argument("-i", "--input", action="store", dest="filename", required=True,
 		help="Name of the SAM file, SAM does not need to be sorted and can be compressed with gzip")
 	parser.add_argument("-c", "--consensus-thresholds", action="store", dest="thresholds", type=str, default="0.25",
