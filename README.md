@@ -4,7 +4,7 @@ Get the consensus sequences for short sequencing reads mapped to a reference. Ve
 ## _Brief description_
 The program takes as input a SAM file (.sam or .sam.gz) resulting from mapping short reads to a reference (the reference
 sequences can correspond to separate genes for example), then it calculates the consensus sequence from the aligned
-reads alone. A single or multiple consensus thresholds can be specified, the program also adds insertions, if many long
+reads alone. If you have BAM files you will need to convert them first with `samtools`. A single or multiple consensus thresholds can be specified, the program also adds insertions, if many long
 long insertions are expected, we recommend to perform indel ralignment before for optimal results. The consensus method
 is the one used by Geneious and described in detail in http://assets.geneious.com/manual/8.1/GeneiousManualse41.html
 
