@@ -135,7 +135,7 @@ def main():
 
 	fill = args.fill
 
-	maxdel = rgs.maxdel
+	maxdel = args.maxdel
 
 
 
