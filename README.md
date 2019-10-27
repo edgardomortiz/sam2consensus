@@ -17,9 +17,27 @@ It will produce a FASTA file per reference containing as many sequences as thres
 Just type `python sam2consensus.py -h` to show the help of the program:
 ```
 usage: sam2consensus.py [-h] -i FILENAME [-c THRESHOLDS] [-n N] [-o OUTFOLDER]
-                        [-p PREFIX] [-m MIN_DEPTH] [-f FILL]
+                        [-p PREFIX] [-m MIN_DEPTH] [-f FILL] [-d MAXDEL]
 
-Calculates the consensus sequence from reads aligned in SAM format
++------------------------------------------------------------------+
+| sam2consensus.py: extract the consensus sequence from a SAM file |
++------------------------------------------------------------------+
+
+The program takes as input a SAM file (.sam or .sam.gz) resulting from mapping
+short reads to a reference (the reference sequences can correspond to separate
+genes for example), then it calculates the consensus sequence from the aligned
+reads alone. A single or multiple consensus thresholds can be specified, the
+program also adds insertions, if many long insertions are expected, we recommend
+to perform indel ralignment before for optimal results. The consensus method is
+the one used by Geneious and described in detail in
+http://assets.geneious.com/manual/8.1/GeneiousManualse41.html
+
+Regions with no coverage are filled with -s (or a different character if
+specified). Input SAM files don't need to be sorted. Original reference FASTAs
+are not necessary since the consensus is reference-free.
+
+It will produce a FASTA file per reference containing as many sequences as
+thresholds were specified.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -38,9 +56,11 @@ optional arguments:
                         without .sam extension
   -m MIN_DEPTH, --min-depth MIN_DEPTH
                         Minimum read depth at each site to report the
-                        nucleotide in the consensus, default=2
+                        nucleotide in the consensus, default=1
   -f FILL, --fill FILL  Character for padding regions not covered in the
                         reference, default= - (gap)
+  -d MAXDEL, --maxdel MAXDEL
+                        Ignore deletions longer than this value, default=150
 ```
 
 ## _Examples_

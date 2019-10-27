@@ -27,7 +27,7 @@ thresholds were specified.
 
 __author__      = "Edgardo M. Ortiz"
 __credits__     = "Deise J.P. Gonçalves"
-__version__     = "2.0"
+__version__     = "2.1"
 __email__       = "e.ortiz.v@gmail.com"
 __date__        = "2019-01-11"
 
@@ -99,6 +99,8 @@ def main():
 		help="Minimum read depth at each site to report the nucleotide in the consensus, default=1")
 	parser.add_argument("-f", "--fill", action="store", dest="fill", default="-",
 		help="Character for padding regions not covered in the reference, default= - (gap)")
+	parser.add_argument("-d", "--maxdel", action="store", dest="maxdel", default=150,
+		help="Ignore deletions longer than this value, default=150")
 	args = parser.parse_args()
 
 
@@ -132,6 +134,8 @@ def main():
 	nchar = args.n
 
 	fill = args.fill
+
+	maxdel = rgs.maxdel
 
 
 
@@ -203,9 +207,15 @@ def main():
 
 					# Fill the nucleotides in their respective reference according to the alignment described by the
 					# CIGAR string
-					for nuc in seqout:
-						sequences[refname][pos_ref][nuc] += 1
-						pos_ref += 1
+					if seqout.count("-") <= maxdel:
+						for nuc in seqout:
+							sequences[refname][pos_ref][nuc] += 1
+							pos_ref += 1
+					else:
+						for nuc in seqout:
+							if nuc != "-":
+								sequences[refname][pos_ref][nuc] += 1
+							pos_ref += 1
 
 					# Add insertions with coordinates to the dictionary of insertions per reference
 					insertions[refname] += insert
